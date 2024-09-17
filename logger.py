@@ -1,4 +1,4 @@
-from redis_cache import RedisDB
+from services.redis_cache import RedisDB
 
 class Logger:
     def __init__(self) -> None:
