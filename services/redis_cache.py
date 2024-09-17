@@ -13,9 +13,9 @@ class RedisDB:
 
     def save_data(self, request_id, data):
         try:
-            pass
+            self.redis_client.rpush(request_id, data)
         except Exception as e:
-            raise e
+            print("Exception in save_data: ", e)
     
 
     def get_data(self, request_id, hist_count=20):
