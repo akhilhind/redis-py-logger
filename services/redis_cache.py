@@ -13,7 +13,8 @@ class RedisDB:
 
     def save_data(self, request_id, data):
         try:
-            self.redis_client.rpush(request_id, data)
+            print(request_id)
+            self.redis_client.rpush(request_id, json.dumps(data))
         except Exception as e:
             print("Exception in save_data: ", e)
     

@@ -27,6 +27,7 @@ def main():
         name = request.json['name']
         logger.log('this is a simple log')
         logger.log('hahahahahahha ahahahhaha')
+        logger.critical('on no, something is bad')
         return "thanks", 200
     except Exception as e:
         logger.error("exception occured")
