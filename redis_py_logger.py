@@ -94,6 +94,7 @@ class RedisPyLogger:
             with open(self.log_file, 'a') as file:
                 file.write(formatted_log_entry + '\n')
 
+        # here we are saving by each request, we have to implement mechanism to save per user/session-id
         if self.client:
             self.client.save_data(self.request_id, structured_log_entry)
 
