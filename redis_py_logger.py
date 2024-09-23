@@ -1,4 +1,5 @@
 import uuid
+from flask import g
 from datetime import datetime
 from services.redis_cache import RedisDB
 
@@ -13,12 +14,14 @@ class RedisPyLogger:
         self.log_level = 'INFO'
         self.use_colors = False
         self.redis_config = None
+        self.group_by_var = None
         self.request_id = self.generate_request_id()
 
         if config:
             self.log_file = config.get('log_file_path', self.log_file)
             self.log_level = config.get('log_level', self.log_level)
             self.use_colors = config.get('use_colors', self.use_colors)
+            self.group_by_var = config.get('group_by', self.group_by_var)
             
             if 'database' in config:
                 db_config = config['database']
@@ -40,8 +43,14 @@ class RedisPyLogger:
         if self.should_log(level):
             formatted_log_entry = self.format_log_entry(message, level)
             structured_log_entry = self.structure_log_entry(message, level)
-            print('inside log')
-            self.output_log(formatted_log_entry, structured_log_entry)
+            if self.group_by_var:
+                group_by_id = self.retrieve_group_by_id()
+            self.output_log(formatted_log_entry, structured_log_entry, group_by_id)
+            
+    def retrieve_group_by_id(self) -> str:
+        """Retrieve session or grouping ID from the program's current scope."""
+        if self.group_by_var:
+            return getattr(g, self.group_by_var, None)
     
     def info(self, message: str, level: str = 'INFO') -> None:
         self.log(message, level)
@@ -88,15 +97,14 @@ class RedisPyLogger:
         color = colors.get(level, colors['RESET'])
         return f"{color}{log_entry}{colors['RESET']}"
 
-    def output_log(self, formatted_log_entry: str, structured_log_entry: str) -> None:
-        print(formatted_log_entry)
+    def output_log(self, formatted_log_entry: str, structured_log_entry: str, group_by_id: str) -> None:
         if self.log_file:
             with open(self.log_file, 'a') as file:
                 file.write(formatted_log_entry + '\n')
 
-        # here we are saving by each request, we have to implement mechanism to save per user/session-id
+        print(self.request_id)
         if self.client:
-            self.client.save_data(self.request_id, structured_log_entry)
+            self.client.save_data(self.request_id, structured_log_entry, group_by_id)
 
     def generate_request_id(self) -> str:
         return str(uuid.uuid4())
