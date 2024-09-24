@@ -18,6 +18,9 @@ logger = RedisPyLogger({
     "group_by": "curr_user"
 })
 
+# There is an overhead user is request to put the custom group by variable to flask g object.
+# there should be a method to not do so.
+
 
 app = Flask(__name__)
 

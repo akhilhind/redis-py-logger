@@ -15,7 +15,7 @@ class RedisPyLogger:
         self.use_colors = False
         self.redis_config = None
         self.group_by_var = None
-        self.request_id = self.generate_request_id()
+        # self.request_id = self.generate_request_id()
 
         if config:
             self.log_file = config.get('log_file_path', self.log_file)
@@ -40,6 +40,9 @@ class RedisPyLogger:
             raise ValueError(f"Invalid log level: {self.log_level}. Must be one of {valid_log_levels}.")
 
     def log(self, message: str, level: str = 'INFO') -> None:
+        if 'request_id' not in g:
+            g.request_id = self.generate_request_id()
+
         if self.should_log(level):
             formatted_log_entry = self.format_log_entry(message, level)
             structured_log_entry = self.structure_log_entry(message, level)
@@ -75,7 +78,7 @@ class RedisPyLogger:
             "message": message,
             "timestamp": timestamp.isoformat(),
             "timestamp_h": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-            "request_id": self.request_id
+            "request_id": g.request_id
         }
         return structured_log_entry
 
@@ -102,9 +105,12 @@ class RedisPyLogger:
             with open(self.log_file, 'a') as file:
                 file.write(formatted_log_entry + '\n')
 
-        print(self.request_id)
+        # Here we are grouping by custom group id, we should give user an option to: 
+        # 1. group by custom
+        # 2. don't group by custom
+        # 3. Use only inbuilt grouping
         if self.client:
-            self.client.save_data(self.request_id, structured_log_entry, group_by_id)
+            self.client.save_data(g.request_id, structured_log_entry, group_by_id)
 
     def generate_request_id(self) -> str:
         return str(uuid.uuid4())
