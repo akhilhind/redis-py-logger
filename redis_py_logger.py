@@ -105,6 +105,10 @@ class RedisPyLogger:
             with open(self.log_file, 'a') as file:
                 file.write(formatted_log_entry + '\n')
 
+        # Here we are grouping by custom group id, we should give user an option to: 
+        # 1. group by custom
+        # 2. don't group by custom
+        # 3. Use only inbuilt grouping
         if self.client:
             self.client.save_data(g.request_id, structured_log_entry, group_by_id)
 
