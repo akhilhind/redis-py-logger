@@ -19,7 +19,7 @@ logger = RedisPyLogger({
 })
 
 # There is an overhead user is request to put the custom group by variable to flask g object.
-# there should be a method to not do so.
+# there should be a method to not do so.`
 
 
 app = Flask(__name__)
@@ -28,11 +28,8 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def main():
     try:
-        curr_user = "hahahahhahahaha"
+        curr_user = "akhil"
         # g.curr_user = curr_user
-        # print(locals())
-        # print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-        # print(globals())
         name = request.json['name']
         logger.log('this is a simple log')
         logger.log('hahahahahahha ahahahhaha')
