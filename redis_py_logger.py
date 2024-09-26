@@ -5,6 +5,7 @@ from services.redis_cache import RedisDB
 
 class RedisPyLogger:
     def __init__(self, config=None) -> None:
+        """constructor for initializing the class"""
         self.db_config = {
             'db_name': None,
             'db_host': None,
@@ -40,6 +41,7 @@ class RedisPyLogger:
             raise ValueError(f"Invalid log level: {self.log_level}. Must be one of {valid_log_levels}.")
 
     def log(self, message: str, level: str = 'INFO') -> None:
+        """method to log"""
         if 'request_id' not in g:
             g.request_id = self.generate_request_id()
 
@@ -56,22 +58,28 @@ class RedisPyLogger:
             return getattr(g, self.group_by_var, None)
     
     def info(self, message: str, level: str = 'INFO') -> None:
+        """info level logging"""
         self.log(message, level)
 
     def error(self, error_message: str, level: str = 'ERROR') -> None:
+        """error level logging"""
         self.log(error_message, level)
         
     def debug(self, debug_message: str, level: str = 'DEBUG') -> None:
+        """debug level logging"""
         self.log(debug_message, level)
         
     def critical(self, critical_message: str, level: str = 'CRITICAL') -> None:
+        """critical level logging"""
         self.log(critical_message, level)
 
     def should_log(self, level: str) -> bool:
+        """function to check if logging is required"""
         log_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
         return log_levels.index(level) >= log_levels.index(self.log_level)
     
     def structure_log_entry(self, message: str, level: str) -> dict:
+        """structuing the logs before saving"""
         timestamp = datetime.now()
         structured_log_entry = {
             "level": level,
@@ -83,12 +91,14 @@ class RedisPyLogger:
         return structured_log_entry
 
     def format_log_entry(self, message: str, level: str) -> str:
+        """formatting the logs before saving"""
         log_entry = f"[{level}] {message}"
         if self.use_colors:
             log_entry = self.apply_color_scheme(log_entry, level)
         return log_entry
 
     def apply_color_scheme(self, log_entry: str, level: str) -> str:
+        """function to apply colors to log depending on the level"""
         colors = {
             'ERROR': '\033[91m',
             'WARNING': '\033[93m',
@@ -113,4 +123,5 @@ class RedisPyLogger:
             self.client.save_data(g.request_id, structured_log_entry, group_by_id)
 
     def generate_request_id(self) -> str:
+        """function to generate unique id for each request"""
         return str(uuid.uuid4())
