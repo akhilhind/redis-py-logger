@@ -7,11 +7,17 @@ from your_module import transfer_logs
 
 
 def job():
+    """
+    function to run job after every n seconds/minutes
+    """
     transfer_logs(redis_client, 'mystream', mongo_collection)
 
 # Schedule the job every 2 minutes
 schedule.every(2).minutes.do(job)
 
 while True:
+    """
+    keep running the function
+    """
     schedule.run_pending()
     time.sleep(1)
