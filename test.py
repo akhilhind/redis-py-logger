@@ -1,6 +1,9 @@
 from flask import Flask, request, g
 from redis_py_logger import RedisPyLogger
 
+"""
+define config for initializing redis-py-logger class 
+"""
 logger = RedisPyLogger({
     "database": {
         "name": "mongo",
@@ -24,7 +27,9 @@ logger = RedisPyLogger({
 
 app = Flask(__name__)
 
-
+"""
+endpoint for querying
+"""
 @app.route('/', methods=['POST'])
 def main():
     try:
