@@ -37,7 +37,6 @@ def main():
         # g.curr_user = curr_user
         name = request.json['name']
         logger.log('this is a simple log')
-        logger.log('hahahahahahha ahahahhaha')
         logger.critical('on no, something is bad')
         return "thanks", 200
     except Exception as e:
