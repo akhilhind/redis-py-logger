@@ -4,8 +4,21 @@ from datetime import datetime
 from services.redis_cache import RedisDB
 
 class RedisPyLogger:
+    _instance = None
+
+    def __new__(cls, config=None) -> "RedisPyLogger":
+        """Ensuring only one instance of RedisPyLogger is created"""
+        if not cls._instance:
+            cls._instance = super(RedisPyLogger, cls).__new__(cls)
+            cls._instance.__init__(config)
+        return cls._instance
+
     def __init__(self, config=None) -> None:
         """constructor for initializing the class"""
+        if hasattr(self, 'initialized'):
+            return
+        self.initialized = True
+
         self.db_config = {
             'db_name': None,
             'db_host': None,
@@ -33,7 +46,6 @@ class RedisPyLogger:
             if 'redis_config' in config:
                 self.redis_config = config['redis_config']
                 
-
         self.client = RedisDB()
 
         valid_log_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
@@ -79,7 +91,7 @@ class RedisPyLogger:
         return log_levels.index(level) >= log_levels.index(self.log_level)
     
     def structure_log_entry(self, message: str, level: str) -> dict:
-        """structuing the logs before saving"""
+        """structuring the logs before saving"""
         timestamp = datetime.now()
         structured_log_entry = {
             "level": level,
