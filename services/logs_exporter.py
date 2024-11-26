@@ -18,3 +18,15 @@ class LogExporter:
 
     def run(self):
         self.export_logs_to_db()
+        
+    def run_cron(self):
+        """method to run export logs as a cron job"""
+        try:
+            while True:
+                self.export_logs_to_db()
+                time.sleep(self.interval)
+        except Exception as e:
+            print(f"Error in cron job: {e}")
+            raise e
+
+    
